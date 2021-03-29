@@ -53,7 +53,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_classes = 11
 learning_rate = 0.001
 batch_size = 50
-num_epochs = 200
+num_epochs = 2
+
+model = CNN(output_size=num_classes).to(device)
 
 # Load data
 lr_data = LRDataset(["leftright_test.csv", "leftright_train.csv", "leftright_combined.csv"])
@@ -105,7 +107,6 @@ lr_loader = DataLoader(dataset=lr_data, batch_size = 64, shuffle=True)
 
 
 # Initialize network
-model = CNN(output_size=num_classes).to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -191,3 +192,5 @@ tsa = check_accuracy(test_loader, model)
 
 print(f"Training accuracy = {tra:.5f}")
 print(f"Test accuracy = {tsa:.5f}")
+
+torch.save(model.state_dict(), "models/abc.pth")
