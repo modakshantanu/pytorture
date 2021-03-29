@@ -122,5 +122,5 @@ for epoch in range(num_epochs):
 tra = check_accuracy(train_loader, model)
 tsa = check_accuracy(test_loader, model)
 
-print(f"Training accuracy = {tra:.2f}")
-print(f"Test accuracy = {tsa:.2f}")
+print(f"Training accuracy = {tra:.5f}")
+print(f"Test accuracy = {tsa:.5f}")

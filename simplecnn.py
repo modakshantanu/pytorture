@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from lrdataset import LRDataset
+from normal_dataset import NormDataset
 from torch.utils.data import DataLoader
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
@@ -24,7 +25,7 @@ class NN(nn.Module):
 
 # create network
 class CNN(nn.Module):
-    def __init__(self, in_channels = 3, output_size = 2):
+    def __init__(self, in_channels = 5, output_size = 2):
         super(CNN, self).__init__()
         self.stack = nn.Sequential(
             nn.Conv1d(in_channels=in_channels, out_channels=8,kernel_size=5, stride=1,padding=2),
@@ -51,13 +52,35 @@ class CNN(nn.Module):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
-num_classes = 2
+num_classes = 11
 learning_rate = 0.001
 batch_size = 50
 num_epochs = 200
 
 # Load data
 all_data = LRDataset(["leftright_test.csv", "leftright_train.csv", "leftright_combined.csv"])
+all_data = torch.utils.data.ConcatDataset([
+    NormDataset(files=["wipetable_combined.csv"], dir="data/capstone/24Mar/", label=10),
+    NormDataset(files=["sidepump_combined.csv"], dir="data/capstone/24Mar/", label=9),
+    NormDataset(files=["pointhigh_combined.csv"], dir="data/capstone/24Mar/", label=8),
+    NormDataset(files=["listen_combined.csv"], dir="data/capstone/24Mar/", label=7),
+    NormDataset(files=["hair_combined.csv"], dir="data/capstone/24Mar/", label=4),
+    NormDataset(files=["gun_combined.csv"], dir="data/capstone/24Mar/", label=5),
+    NormDataset(files=["elbowkick_combined.csv"], dir="data/capstone/24Mar/", label=6),
+    NormDataset(files=["dab_combined.csv"], dir="data/capstone/24Mar/", label=3),
+
+    all_data, 
+    NormDataset(files=["standing_combined.csv"], label=2),
+    NormDataset(files=["dab_combined.csv"], label=3),
+    NormDataset(files=["hair_combined.csv"], label=4),
+    NormDataset(files=["gun_combined.csv"], label=5),
+    NormDataset(files=["elbowkick_combined.csv"], label=6),
+    NormDataset(files=["listen_combined.csv"], label=7),
+    NormDataset(files=["pointhigh_combined.csv"], label=8),
+    NormDataset(files=["sidepump_combined.csv"], label=9),
+    NormDataset(files=["wipetable_combined.csv"], label=10),
+    ])
+    
 
 total_samples = all_data.__len__()
 train_cnt = round(total_samples * 0.8)
@@ -73,7 +96,7 @@ train_loader = DataLoader(dataset=train_dataset, batch_size = 64, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size = 64, shuffle=True)
 
 # Initialize network
-model = CNN().to(device)
+model = CNN(output_size=num_classes).to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -127,15 +150,15 @@ for epoch in range(num_epochs):
         _, predictions = scores.max(1)
 
         correct += (predictions == answer).sum() 
-    print(f"Epoch {epoch}, accuracy = {correct / total * 100:.2f}, loss={loss_amt}")
+    print(f"Epoch {epoch}, accuracy = {correct / total * 100:.5f}, loss={loss_amt}")
     model.eval()
     tsa = check_accuracy(test_loader, model)
-    print(f"Test accuracy = {tsa:.2f}")
+    print(f"Test accuracy = {tsa:.5f}")
     model.train()
 
 
 tra = check_accuracy(train_loader, model)
 tsa = check_accuracy(test_loader, model)
 
-print(f"Training accuracy = {tra:.2f}")
-print(f"Test accuracy = {tsa:.2f}")
+print(f"Training accuracy = {tra:.5f}")
+print(f"Test accuracy = {tsa:.5f}")
