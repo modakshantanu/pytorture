@@ -1,31 +1,74 @@
 #include <bits/stdc++.h>
 #include "netio.h"
 #include "dataset.h"
+#include "model.h"
 using namespace std;
 
 vector<vector<vector<float>>> filter1, filter2;
-vector<float> bias1, bias2;
+vector<float> bias1, bias2, bias3;
 vector<vector<float>> linear;
 vector<pair<vector<vector<float>>, int>> dataset;
 
 
-void apply_filter(vector<vector<float>> &input, vector<vector<vector<float>>> &filters, int padding = 2) {
-    
-    if (input.size() != filters[0].size()) {
-        cout<<"DIMENSION ERROR";
-    }
 
-    vector<vector<float>> padded(input.size(), vector<float>(input[0].size() + padding*2, 0));
-    for (int i = 0; i < input.size(); i++) {
-        for (int j = 0; j < input[0].size(); j++) {
-            padded[i][j+padding] = input[i][j];
+vector<float> feedforward(vector<vector<float>> &input) {
+    auto res1 = apply_filter(input, filter1, bias1);
+    auto res2 = max_pool(res1);
+    auto res3 = apply_filter(res2, filter2, bias2);
+    auto res4 = max_pool(res3);
+    auto res5 = flatten(res4);
+    auto res6 = linear_net(res5, linear, bias3);
+    return res6;
+}
+
+void pre_process(vector<vector<float>> &input) {
+    for (int i = 0; i < 3; i++) {
+        float avg = 0;
+        for (int j = 0; j < 40; j++) {
+            avg += input[i][j];
+        }
+        avg /= 40;
+        for (int j = 0; j < 40; j++) {
+            input[i][j] = (input[i][j] - avg)/2048.0;
         }
     }
 
-    
+    for (int i = 3; i < 5; i++) {
+        for (int j = 0; j < 40; j++) {
+            input[i][j] = input[i][j] * 1.0/900.0 - 0.5;
+        }
+    }
 
+    // print_2d(input);
 }
 
+void test_accuracy() {
+
+    int correct = 0;
+    int total = 0;
+
+    for (auto& it: dataset) {
+        auto &data = it.first;
+        auto &label = it.second;
+
+
+        pre_process(data);
+
+        auto res = feedforward(data);
+
+        bool not_highest = false;
+        for (int i = 0; i < 11; i++) {
+            if (res[i] > res[label]) not_highest = true;
+        }
+
+        if (!not_highest) correct++;
+        total++;
+        
+    }
+
+    printf("Accuracy = %.5f\n", (100.0 * correct) / total);
+
+}
 
 
 int main() {
@@ -34,7 +77,7 @@ int main() {
 
     bias1 = vector<float>(8);
     bias2 = vector<float>(16);
-
+    bias3 = vector<float>(11);
     linear = vector<vector<float>>(11, vector<float>(160));
 
     read_3d(filter1);
@@ -44,10 +87,21 @@ int main() {
     read_1d(bias2);
 
     read_2d(linear);
+    read_1d(bias3);
 
-    append_to_dataset(dataset, "data/capstone/24Mar/gun_combined.csv", 1);
+    append_to_dataset(dataset, "data/capstone/24Mar/gun_combined.csv", 5);
+    append_to_dataset(dataset, "data/capstone/24Mar/sidepump_combined.csv", 9);
+    append_to_dataset(dataset, "data/capstone/24Mar/elbowkick_combined.csv", 6);
+    append_to_dataset(dataset, "data/capstone/24Mar/listen_combined.csv", 7);
+    append_to_dataset(dataset, "data/capstone/24Mar/pointhigh_combined.csv", 8);
+    append_to_dataset(dataset, "data/capstone/24Mar/wipetable_combined.csv", 10);
+    append_to_dataset(dataset, "data/capstone/24Mar/dab_combined.csv", 3);
+    append_to_dataset(dataset, "data/capstone/24Mar/hair_combined.csv", 4);
 
-    cout<<dataset.size();
+
+    test_accuracy();
+
+
 
 
 

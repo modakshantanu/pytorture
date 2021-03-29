@@ -41,6 +41,7 @@ def preprocess_1(dataset, fileName):
                 subrange[k] -= torch.mean(subrange[k])
 
             # subrange = torch.transpose(subrange,0,1)
+            print(subrange)
             # Augment data
             for k in range(10):
                 dataset.data[dataset.data_idx] =  torch.unsqueeze(subrange + torch.rand_like(subrange) * 0.5e-2, dim=0)

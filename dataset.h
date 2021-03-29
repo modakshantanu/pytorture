@@ -22,22 +22,24 @@ void append_to_dataset(vector<pair<vector<vector<float>>, int>> &dataset, string
             string csvline;
             file>>csvline;
             stringstream str(csvline);
-            // 11 12 13 16 17
+            // 10 11 12 16 17
             for (int j = 0; j < 18; j++) {
                 int tmp;
                 string ts;
                 getline(str, ts, ',');
 
+                // cout<<ts<<" ";
                 if (j != 0 && j != 9)
                     tmp = stoi(ts);
 
 
-                if (j == 11) raw_samples[0][i] = tmp;
-                if (j == 12) raw_samples[1][i] = tmp;
-                if (j == 13) raw_samples[2][i] = tmp;
+                if (j == 10) raw_samples[0][i] = tmp;
+                if (j == 11) raw_samples[1][i] = tmp;
+                if (j == 12) raw_samples[2][i] = tmp;
                 if (j == 16) raw_samples[3][i] = tmp;
                 if (j == 17) raw_samples[4][i] = tmp;
             }
+            // cout<<endl;
 
         }
         for (int i = 0; i < time_samples - 40 + 1; i++) {

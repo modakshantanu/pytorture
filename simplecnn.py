@@ -53,9 +53,14 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_classes = 11
 learning_rate = 0.001
 batch_size = 50
-num_epochs = 2
+num_epochs = 5
 
 model = CNN(output_size=num_classes).to(device)
+
+temp_loader = NormDataset(files=["gun_combined.csv"], dir="data/capstone/24Mar/", label=5),
+
+exit(0)
+
 
 # Load data
 lr_data = LRDataset(["leftright_test.csv", "leftright_train.csv", "leftright_combined.csv"])
@@ -140,7 +145,6 @@ lr_adjustments = 6
 
 # Train Network
 for epoch in range(num_epochs):
-    
     total = 0
     correct = 0
     loss_amt = 0

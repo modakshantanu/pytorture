@@ -39,9 +39,9 @@ model.load_state_dict(torch.load("models/abc.pth"))
 wb = model.state_dict()
 
 for i in wb:
-    print(i, wb[i].shape)
+    # print(i, wb[i].shape)
     wb[i] = torch.flatten(wb[i])
     # print(wb[i])
-    # for j in wb[i]:
-    #     print(float(j))
+    for j in wb[i]:
+        print(float(j))
 
