@@ -30,11 +30,9 @@ class CNN(nn.Module):
         self.stack = nn.Sequential(
             nn.Conv1d(in_channels=in_channels, out_channels=8,kernel_size=5, stride=1,padding=2),
             nn.ReLU(),
-            # nn.Dropout(p=0.2),
             nn.MaxPool1d(kernel_size=2, stride=2),
             nn.Conv1d(in_channels=8, out_channels=16, kernel_size=5, stride=1, padding=2),
             nn.ReLU(),
-            # nn.Dropout(p=0.2),
             nn.MaxPool1d(kernel_size=2, stride=2),
             nn.Flatten(),
             nn.Linear(8*20, output_size)
@@ -58,18 +56,9 @@ batch_size = 50
 num_epochs = 200
 
 # Load data
-all_data = LRDataset(["leftright_test.csv", "leftright_train.csv", "leftright_combined.csv"])
-all_data = torch.utils.data.ConcatDataset([
-    NormDataset(files=["wipetable_combined.csv"], dir="data/capstone/24Mar/", label=10),
-    NormDataset(files=["sidepump_combined.csv"], dir="data/capstone/24Mar/", label=9),
-    NormDataset(files=["pointhigh_combined.csv"], dir="data/capstone/24Mar/", label=8),
-    NormDataset(files=["listen_combined.csv"], dir="data/capstone/24Mar/", label=7),
-    NormDataset(files=["hair_combined.csv"], dir="data/capstone/24Mar/", label=4),
-    NormDataset(files=["gun_combined.csv"], dir="data/capstone/24Mar/", label=5),
-    NormDataset(files=["elbowkick_combined.csv"], dir="data/capstone/24Mar/", label=6),
-    NormDataset(files=["dab_combined.csv"], dir="data/capstone/24Mar/", label=3),
+lr_data = LRDataset(["leftright_test.csv", "leftright_train.csv", "leftright_combined.csv"])
+dance_data = torch.utils.data.ConcatDataset([
 
-    all_data, 
     NormDataset(files=["standing_combined.csv"], label=2),
     NormDataset(files=["dab_combined.csv"], label=3),
     NormDataset(files=["hair_combined.csv"], label=4),
@@ -79,7 +68,24 @@ all_data = torch.utils.data.ConcatDataset([
     NormDataset(files=["pointhigh_combined.csv"], label=8),
     NormDataset(files=["sidepump_combined.csv"], label=9),
     NormDataset(files=["wipetable_combined.csv"], label=10),
-    ])
+    
+    NormDataset(files=["wipetable_combined.csv"], dir="data/capstone/24Mar/", label=10),
+    NormDataset(files=["sidepump_combined.csv"], dir="data/capstone/24Mar/", label=9),
+    NormDataset(files=["pointhigh_combined.csv"], dir="data/capstone/24Mar/", label=8),
+    NormDataset(files=["listen_combined.csv"], dir="data/capstone/24Mar/", label=7),
+    NormDataset(files=["hair_combined.csv"], dir="data/capstone/24Mar/", label=4),
+    NormDataset(files=["gun_combined.csv"], dir="data/capstone/24Mar/", label=5),
+    NormDataset(files=["elbowkick_combined.csv"], dir="data/capstone/24Mar/", label=6),
+    NormDataset(files=["dab_combined.csv"], dir="data/capstone/24Mar/", label=3),
+])
+    
+    
+all_data = torch.utils.data.ConcatDataset([
+    lr_data,
+    dance_data
+])
+
+lr_data = torch.utils.data.ConcatDataset([lr_data,  NormDataset(files=["standing_combined.csv"], label=2)])
     
 
 total_samples = all_data.__len__()
@@ -94,6 +100,9 @@ print(f"Training samples: {train_dataset.__len__()}, Testing samples: {test_data
 train_loader = DataLoader(dataset=train_dataset, batch_size = 64, shuffle=True)
 # test_dataset = LRDataset(["leftright_test.csv"])
 test_loader = DataLoader(dataset=test_dataset, batch_size = 64, shuffle=True)
+dance_loader = DataLoader(dataset=dance_data, batch_size = 64, shuffle=True)
+lr_loader = DataLoader(dataset=lr_data, batch_size = 64, shuffle=True)
+
 
 # Initialize network
 model = CNN(output_size=num_classes).to(device)
@@ -124,6 +133,10 @@ def check_accuracy(loader, model):
     acc = num_correct / total_num * 100
     
     return acc
+
+loss_record = []
+lr_adjustments = 6
+
 # Train Network
 for epoch in range(num_epochs):
     
@@ -150,11 +163,27 @@ for epoch in range(num_epochs):
         _, predictions = scores.max(1)
 
         correct += (predictions == answer).sum() 
+
+    loss_record.append(loss_amt)
     print(f"Epoch {epoch}, accuracy = {correct / total * 100:.5f}, loss={loss_amt}")
-    model.eval()
-    tsa = check_accuracy(test_loader, model)
-    print(f"Test accuracy = {tsa:.5f}")
-    model.train()
+
+    if epoch % 5 == 0:
+        model.eval()
+        tsa = check_accuracy(test_loader, model)
+        dance_acc = check_accuracy(dance_loader, model)
+        lr_acc = check_accuracy(lr_loader, model)
+        print(f"Test accuracy = {tsa:.5f}")
+        print(f"Dance accuracy = {dance_acc:.5f}")
+        print(f"LR accuracy = {lr_acc:.5f}")
+        model.train()
+
+    if (len(loss_record) > 5 and loss_amt / loss_record[-5] > 0.8):
+        learning_rate /= 2
+        print(f"Adjusted learning rate to {learning_rate}")
+        lr_adjustments -= 1
+        if lr_adjustments == 0:
+            break
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 
 tra = check_accuracy(train_loader, model)

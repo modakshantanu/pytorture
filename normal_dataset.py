@@ -11,7 +11,7 @@ def preprocess_1(dataset, fileName):
     dataset.total_samples += samples
 
     for i in range(samples):
-        print(i)
+        # print(i)
         time_samples = int(file.readline())
         
         cur_data = []
