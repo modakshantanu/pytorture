@@ -17,8 +17,8 @@ float ch_avg[3];
     ((-90.0 + acos((inbuff[0][t]/sqrt(inbuff[0][t] * inbuff[0][t] + inbuff[1][t] * inbuff[1][t] + inbuff[2][t] * inbuff[2][t]))) * 180.0 / 3.14159) / 90.0 - 0.5 )\
 )
 
-#define NB_WRITE(ch,t,r,v,o) (nb[(o + ch + ((t) * r)) % 192] = v)
-#define NB_READ(ch,t,r,o) (nb[(o + ch + ((t) * r)) % 192])
+#define NB_WRITE(ch,t,r,v,o) (nb[(o + ch + ((t) * (r))) % 192] = v)
+#define NB_READ(ch,t,r,o) (nb[(o + ch + ((t) * (r))) % 192])
 
 void add_pkt(int x, int y,int z) {
     inbuff[0][inbuff_idx] = x;
@@ -50,12 +50,18 @@ void conv1(vector<vector<vector<float>>> &filters, vector<float> &bias) {
 
             if (sum < 0) sum = 0;
 
+
+            // f = 7, t = -2
+            // if (f == 7 && t == -1) {
+            //     printf("%f\n", sum);
+            //     printf("%d\n", -1 / 2);
             
+            // }
 
             if (t % 2 == 0) {
-                NB_WRITE(f, t/2 + 1, 8, sum, 0);
-            } else if (NB_READ(f, t/2 , 8, 0) < sum) {
-                NB_WRITE(f, t/2 + 1, 8, sum, 0);
+                NB_WRITE(f, (t + 2)/2, 8, sum, 0);
+            } else if (NB_READ(f, (t + 2)/2, 8, 0) < sum) {
+                NB_WRITE(f, (t + 2)/2, 8, sum, 0);
             }
         }
     }
@@ -81,19 +87,24 @@ void conv2(vector<vector<vector<float>>> &filters, vector<float> &bias) {
             }
             sum += bias[f];
             if (sum < 0) sum = 0;
+
+            // printf("%f\n", sum);
             
             if (t % 2 == 0) {
-                // printf("t = %d, f = %d, writing to %d\n", t, f, (160 + f + (t/2 + 1) * 16) % 192);
-                NB_WRITE( f, t/2+1, 16, sum, 160);
-            } else if (NB_READ(f, t/2 + 1, 16, 160) < sum) {
+                // printf("t = %d, f = %d, writing to %d\n", t, f, (160 + f + (((t+2)/2) * (16))) % 192);
+                NB_WRITE( f, (t+2)/2, 16, sum, 160);
+            } else if (NB_READ(f, (t+2)/2, 16, 160) < sum) {
                 // printf("t = %d, f = %d, overwriting %d\n", t, f, (160 + t/2 + 1 + ((f) * 16)) % 192);
 
-                NB_WRITE(f, t/2+1, 16, sum, 160);
+                NB_WRITE(f, (t+2)/2, 16, sum, 160);
             }
 
         }
     }
+}
 
+void fc_layer(vector<vector<float>> &w, vector<float> &b) {
+    // layer 2 from 160 
 }
 
 
