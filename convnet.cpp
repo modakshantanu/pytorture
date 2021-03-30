@@ -2,6 +2,7 @@
 #include "netio.h"
 #include "dataset.h"
 #include "model.h"
+#include "microcnn.h"
 using namespace std;
 
 vector<vector<vector<float>>> filter1, filter2;
@@ -14,6 +15,7 @@ vector<pair<vector<vector<float>>, int>> dataset;
 vector<float> feedforward(vector<vector<float>> &input) {
     auto res1 = apply_filter(input, filter1, bias1);
     auto res2 = max_pool(res1);
+    print_2d(res2);
     auto res3 = apply_filter(res2, filter2, bias2);
     auto res4 = max_pool(res3);
     auto res5 = flatten(res4);
@@ -51,6 +53,18 @@ void test_accuracy() {
         auto &data = it.first;
         auto &label = it.second;
 
+        for (int t = 0; t < 40; t++) {
+            add_pkt(data[0][t], data[1][t], data[2][t]);
+        }
+        pre_process();
+        conv1(filter1, bias1);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 20; j++) {
+                printf("%.3f\t", NB_READ(i,j,20,0));
+            }
+            printf("\n");
+        }
+
 
         pre_process(data);
 
@@ -63,6 +77,7 @@ void test_accuracy() {
 
         if (!not_highest) correct++;
         total++;
+        break;
         
     }
 
