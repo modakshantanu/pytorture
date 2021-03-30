@@ -104,7 +104,17 @@ void conv2(vector<vector<vector<float>>> &filters, vector<float> &bias) {
 }
 
 void fc_layer(vector<vector<float>> &w, vector<float> &b) {
-    // layer 2 from 160 
+    // layer 2 from 160 to 127
+    // output start from 128
+
+    for (int i = 0; i < 11; i++) {
+        float sum = 0;
+        for (int j = 0; j < 160; j++) {
+            sum += NB_READ(j / 10, j % 10, 16, 160) * w[i][j];
+        }
+        sum += b[i];
+        nb[i + 128] = sum;
+    }
 }
 
 
