@@ -18,6 +18,7 @@ vector<float> feedforward(vector<vector<float>> &input) {
     print_2d(res2);
     auto res3 = apply_filter(res2, filter2, bias2);
     auto res4 = max_pool(res3);
+    // print_2d(res4);
     auto res5 = flatten(res4);
     auto res6 = linear_net(res5, linear, bias3);
     return res6;
@@ -57,14 +58,25 @@ void test_accuracy() {
             add_pkt(data[0][t], data[1][t], data[2][t]);
         }
         pre_process();
+        
         conv1(filter1, bias1);
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 20; j++) {
-                printf("%.3f\t", NB_READ(i,j,20,0));
+                // printf("Reading %d\n", (0 + i + ((j) * 8)) % 192);
+                printf("%.3f\t", NB_READ(i,j,8,0));
             }
             printf("\n");
         }
+        printf("\n");
+        conv2(filter2,bias2);
 
+        // for (int i = 0; i < 16; i++) {
+        //     for (int j = 0; j < 10; j++) {
+        //         printf("%.3f\t", NB_READ(j,i,16,160));
+        //     }
+        //     printf("\n");
+        // }
+        // printf("\n");
 
         pre_process(data);
 

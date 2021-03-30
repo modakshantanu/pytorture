@@ -23,6 +23,7 @@ vector<vector<float>> apply_filter(vector<vector<float>> &input, vector<vector<v
         for (int t = 0; t < input[0].size(); t++) {
             for (int i = 0; i < input.size(); i++) {
                 for (int j = 0; j < filters[0][0].size(); j++) {
+                    // printf("Multiply %f %f\n", padded[i][t+j] ,filters[filter][i][j]);
                     output[filter][t] += padded[i][t+j] * filters[filter][i][j];
                 }
             }
