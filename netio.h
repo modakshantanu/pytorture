@@ -14,6 +14,16 @@ void read_3d(vector<vector<vector<float>>> &f) {
     }
 }
 
+// vector<vector<vector<float>>> trans_3d(vector<vector<vector<float>>> &f) {
+//     vector<vector<vector<float>>> res(f.size(), vector<vector<float>>(f[0][0].size(), vector<float>(f[0].size())));
+    
+//     for (int i = 0; i < res.size(); i++) {
+//         for (int j = 0; j < res[0].size(); j++) {
+//             for (int k = 0; k < res)
+//         }
+//     }
+// }
+
 void print_3d(vector<vector<vector<float>>> &f) {
     for (auto &x: f) {
         for (auto &y: x) {

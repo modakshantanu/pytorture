@@ -22,7 +22,8 @@ def preprocess_1(dataset, fileName):
             part2 = list(map(int, fl.split(",")[16:18]))
             
             part1 = [e * 1/2048 for e in part1]
-            part2 = [e * 1/900 - 0.5 for e in part2]
+            part2 = [(e // 10) * 1/90 for e in part2]
+
 
             row = part1 + part2
             # row = [0,0, int(file.readline().split(",")[13])]        
@@ -41,7 +42,7 @@ def preprocess_1(dataset, fileName):
                 subrange[k] -= torch.mean(subrange[k])
 
             # subrange = torch.transpose(subrange,0,1)
-            print(subrange)
+           
             # Augment data
             for k in range(10):
                 dataset.data[dataset.data_idx] =  torch.unsqueeze(subrange + torch.rand_like(subrange) * 0.5e-2, dim=0)

@@ -35,7 +35,7 @@ class CNN(nn.Module):
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2, stride=2),
             nn.Flatten(),
-            nn.Linear(8*20, output_size)
+            nn.Linear(160, output_size)
         )
 
         # self.stack = nn.Sequential(
@@ -52,14 +52,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Hyperparameters
 num_classes = 11
 learning_rate = 0.001
-batch_size = 50
 num_epochs = 5
 
 model = CNN(output_size=num_classes).to(device)
 
 temp_loader = NormDataset(files=["gun_combined.csv"], dir="data/capstone/24Mar/", label=5),
-
-exit(0)
 
 
 # Load data

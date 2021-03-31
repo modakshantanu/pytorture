@@ -56,6 +56,13 @@ vector<float> linear_net(vector<float> &input, vector<vector<float>> &w, vector<
 
 vector<float> flatten(vector<vector<float>> &input) {
     vector<float> output;
+
+    // for (int i = 0; i < input[0].size(); i++) {
+    //     for (int j = 0; j < input.size(); j++) {
+    //         output.push_back(input[j][i]);
+    //     }
+    // }
+
     for (auto &i: input) {
         for (auto &j: i) {
             output.push_back(j);
@@ -63,5 +70,21 @@ vector<float> flatten(vector<vector<float>> &input) {
     }
     return output;
 }
+
+vector<vector<float>> inner_transpose(vector<vector<float>> &input, int r, int c) {
+
+    vector<vector<float>> out(input.size());
+    for (int j = 0 ; j < input.size(); j++) {
+        vector<float> res(r*c);
+        for (int i = 0; i < r*c; i++) {
+        res[i] = input[j][10 * (i % 16) + i/16];
+        }
+        out[j] = res;
+    }
+    return out;
+    
+}
+
+
 
 #endif

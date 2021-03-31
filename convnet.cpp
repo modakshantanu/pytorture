@@ -15,12 +15,14 @@ vector<pair<vector<vector<float>>, int>> dataset;
 vector<float> feedforward(vector<vector<float>> &input) {
     auto res1 = apply_filter(input, filter1, bias1);
     auto res2 = max_pool(res1);
-    // print_2d(res2);
     auto res3 = apply_filter(res2, filter2, bias2);
     auto res4 = max_pool(res3);
     
+    //print_2d(res4); 
+    // [16][10] => [10][10][10] .... [10]
     auto res5 = flatten(res4);
     auto res6 = linear_net(res5, linear, bias3);
+    // print_1d(res6);
     return res6;
 }
 
@@ -38,43 +40,62 @@ void pre_process(vector<vector<float>> &input) {
 
     for (int i = 3; i < 5; i++) {
         for (int j = 0; j < 40; j++) {
-            input[i][j] = input[i][j] * 1.0/900.0 - 0.5;
+            input[i][j] = (((int)input[i][j]) / 10) /90.0;
         }
     }
 
     // print_2d(input);
 }
 
+
 void test_accuracy() {
 
     int correct = 0;
     int total = 0;
-
+    int idx = 0;
+    auto linear_t = inner_transpose(linear, 16, 10);
+    auto start = std::chrono::system_clock::now();
     for (auto& it: dataset) {
         auto &data = it.first;
         auto &label = it.second;
-
         for (int t = 0; t < 40; t++) {
-            add_pkt(data[0][t], data[1][t], data[2][t]);
+            add_pkt(data[0][t], data[1][t], data[2][t], data[3][t], data[4][t]);
         }
-        pre_process();
-        conv1(filter1, bias1);
-        conv2(filter2,bias2);
-        fc_layer(linear, bias3);
+
         // pre_process(data);
 
         // auto res = feedforward(data);
 
+
+        pre_process();
+        conv1(filter1, bias1);
+        conv2(filter2,bias2);
+        fc_layer(linear_t, bias3);
+        
+        
+
         bool not_highest = false;
+        // for (int i  = 0; i < 11; i++) {
+        //     if (res[i] > res[label]) not_highest = true;
+        // }
         for (int i = 0; i < 11; i++) {
-            if (nb[i + 128] > nb[label + 128]) not_highest = true;
+            if (nb[i + 96] > nb[label + 96]) not_highest = true;
         }
 
         if (!not_highest) correct++;
-        total++;        
+        total++;    
+        // break;    
+        ++idx;
     }
 
-    printf("Accuracy = %.5f\n", (100.0 * correct) / total);
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        printf("Elapsed time = %.9f\n", elapsed_seconds.count());
+
+        printf("Accuracy = %.5f\n", (100.0 * correct) / total);
+        printf("%d / %d\n", correct, total);
+
+        // Initial measure: 8 seconds 
 
 }
 
