@@ -64,5 +64,47 @@ void print_1d(vector<float> &b) {
     printf("\n");
 }
 
+void print_progmem_3d(vector<vector<vector<float>>> &f) {
+    cout<<"{";
+    for (int i = 0; i < f.size(); i++) {
+        cout<<"\n\t{";
+        // cout<<"\n\t";
+        for (int j = 0; j < f[0].size(); j++) {
+            cout<<"{";
+            for (int k = 0; k < f[0][0].size(); k++) {
+                printf("%.9f",f[i][j][k]);
+                if (k != f[0][0].size() - 1) printf(",");
+            }
+            cout<<"}";
+            if (j != f[0].size() -1) cout<<",";
+        }
+        cout<<"}";
+        if (i != f.size() - 1) cout<<",";
+    }
+    cout<<"\n};\n\n";
+}
+
+void print_progmem_2d(vector<vector<float>> &f) {
+    cout<<"{";
+    for (int i = 0; i < f.size(); i++) {
+        cout<<"\n\t{";
+        for (int j = 0; j < f[0].size(); j++) {
+            printf("%.9f",f[i][j]);
+            if (j != f[0].size() - 1) printf(",");
+        }
+        cout<<"}";
+        if (i != f.size() - 1) cout<<",";
+    }
+    cout<<"\n};\n\n";
+}
+
+void print_progmem_1d(vector<float> &f) {
+    cout<<"{";
+    for (int i = 0; i < f.size(); i ++) {
+        printf("%.9f",f[i]);
+        if (i != f.size() - 1) printf(",");
+    }
+    cout<<"};\n\n";
+}
 
 #endif

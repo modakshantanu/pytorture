@@ -20,7 +20,9 @@ class CNN(nn.Module):
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2, stride=2),
             nn.Flatten(),
-            nn.Linear(8*20, output_size)
+            nn.Linear(8*20, output_size),
+            nn.ReLU(),
+            nn.Linear(output_size, output_size)
         )
 
         # self.stack = nn.Sequential(
@@ -30,11 +32,11 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.stack(x)
         return x
-num_classes = 11
+num_classes = 12
 
 model = CNN(output_size=num_classes)
 
-model.load_state_dict(torch.load("models/abc.pth"))
+model.load_state_dict(torch.load("models/abc_1558.pth"))
 
 wb = model.state_dict()
 

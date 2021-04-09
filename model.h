@@ -4,6 +4,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+float mx = -1e9, mn = 1e9;
+
 vector<vector<float>> apply_filter(vector<vector<float>> &input, vector<vector<vector<float>>> &filters, vector<float>& bias, int padding = 2) {
     
     if (input.size() != filters[0].size() || filters.size() != bias.size()) {
@@ -67,6 +69,20 @@ vector<float> flatten(vector<vector<float>> &input) {
         for (auto &j: i) {
             output.push_back(j);
         }
+    }
+    return output;
+}
+
+vector<float> relu(vector<float>& input) {
+    vector<float> output;
+ 
+    for (int i = 0; input.size(); i++) {
+        
+        float ans = input[i] > 0 ? input[i] : 0;
+
+        // cout<<ans;
+
+        output.push_back(ans);
     }
     return output;
 }
