@@ -34,7 +34,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = CNN().to(device)
 
-model.load_state_dict(torch.load("models/abc_1357.pth"))
+model.load_state_dict(torch.load("models/abc_49178.pth"))
 num_classes  =9
 
 test_data = torch.utils.data.ConcatDataset([
@@ -59,7 +59,7 @@ test_data = torch.utils.data.ConcatDataset([
     # ExtDataset(files=["gun_combined.csv"], dir="data/capstone/24Mar/", label=1),
     # ExtDataset(files=["elbowkick_combined.csv"], dir="data/capstone/24Mar/", label=7),
     # ExtDataset(files=["dab_combined.csv"], dir="data/capstone/24Mar/", label=6),
-    MixedDataset(files=["mixed_2.csv"])
+    MixedDataset(files=["mixed_4916443.csv"])
 ])
 
 test_loader = DataLoader(dataset=test_data, batch_size = 64, shuffle=True)

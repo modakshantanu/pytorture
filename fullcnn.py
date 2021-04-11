@@ -6,6 +6,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 # from lrdataset import LRDataset
 from extended_dataset import ExtDataset
+from mixed_dataset import MixedDataset
 from torch.utils.data import DataLoader
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
@@ -47,14 +48,15 @@ model = CNN(output_size=num_classes).to(device)
 # lr_data = LRDataset(["leftright_test.csv", "leftright_train.csv", "leftright_combined.csv"])#, "leftright_1.csv", "leftright_2.csv","leftright_3.csv"])
 dance_data = torch.utils.data.ConcatDataset([
 
-    # ExtDataset(files=["standing_combined.csv"], label=2),
-    ExtDataset(files=["dab_combined.csv"], label=6),
-    ExtDataset(files=["hair_combined.csv"], label=0),
-    ExtDataset(files=["gun_combined.csv"], label=1),
-    ExtDataset(files=["elbowkick_combined.csv"], label=7),
-    ExtDataset(files=["listen_combined.csv"], label=5),
-    ExtDataset(files=["pointhigh_combined.csv"], label=3),
+    ExtDataset(files=["dab_combined.csv","dab_41016848.csv","dab_41016370.csv"], label=6),
+    ExtDataset(files=["hair_combined.csv","hair_410163122.csv"], label=0),
+    ExtDataset(files=["gun_combined.csv", "gun_410165628.csv"], label=1),
+    ExtDataset(files=["elbowkick_combined.csv","elbowkick_410164235.csv"], label=7),
+    ExtDataset(files=["elbowkick_410155710.csv"], label=7),
+    ExtDataset(files=["listen_combined.csv","listen_41016347.csv"], label=5),
+    ExtDataset(files=["pointhigh_combined.csv", "pointhigh_410163955.csv"], label=3),
     ExtDataset(files=["sidepump_combined.csv"], label=2),
+    ExtDataset(files=["sidepump_410155115.csv"], label=2),
     ExtDataset(files=["wipetable_combined.csv"], label=4),
     ExtDataset(files=["logout_1.csv"], label=8),
     ExtDataset(files=["logout_2.csv"], label=8),
@@ -67,6 +69,8 @@ dance_data = torch.utils.data.ConcatDataset([
     ExtDataset(files=["gun_combined.csv"], dir="data/capstone/24Mar/", label=1),
     ExtDataset(files=["elbowkick_combined.csv"], dir="data/capstone/24Mar/", label=7),
     ExtDataset(files=["dab_combined.csv"], dir="data/capstone/24Mar/", label=6),
+
+    MixedDataset(files=["mixed_4916443.csv", "mixed_1.csv" , "mixed_2.csv"])
 ])
     
     
@@ -146,7 +150,7 @@ def check_accuracy(loader, model, showConf=False):
 
 
 loss_record = []
-lr_adjustments = 3
+lr_adjustments = 6
 
 # Train Network
 
@@ -207,7 +211,7 @@ def cleanup():
     # print(f"Test accuracy = {tsa:.5f}")
 
 
-    torch.save(model.state_dict(), f"models/abc_{dt.now().hour}{dt.now().minute}.pth")
+    torch.save(model.state_dict(), f"models/abc_{dt.now().month}{dt.now().day}{dt.now().hour}{dt.now().minute}.pth")
 
 try:
     train_loop()    

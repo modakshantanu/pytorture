@@ -33,7 +33,7 @@ class CNN(nn.Module):
 
 
 model = CNN()
-model.load_state_dict(torch.load("models/abc_1357.pth"))
+model.load_state_dict(torch.load("models/abc_410172.pth"))
 
 
 def run_model(data):
